@@ -9,6 +9,7 @@ from speak_tools.srv import *
 
 import voice2text
 
+# API叩いで天気予報の情報を文字列で返す関数
 def forecast_from_livedoor_api(ID)
 	print("locationID :" + location_id)
 	url = 'http://weather.livedoor.com/forecast/webservice/json/v1'
@@ -21,6 +22,7 @@ def forecast_from_livedoor_api(ID)
 	    ret = ret + forecast['telop'] "。\n"
 	return ret
 
+# 発話ノードに対して喋らせたい内容をパブリッシュする関数
 def speak(text):
     rospy.wait_for_service("speak_text")
     try:
@@ -30,27 +32,16 @@ def speak(text):
     except rospy.ServiceException, e:
         print "Service call failed: %s" % e
 
-def ask_where():
-	speak("どこの天気予報が知りたいですか。")
-
-def listen():
-	cityID = voice2text.get_cityID()
-	return cityID
-
-def say_forecast(ID):
-	# API叩いて結果を発話する。
-	result = forecast_from_livedoor_api(ID)
-	speak(result)
+def do():
+	speak("どこの天気予報が知りたいですか。") # 喋る
+	cityID = voice2text.get_cityID() # 喋っている音声をテキストに変換してIDにして返す
+	result = forecast_from_livedoor_api(cityID) # APIを叩いて情報持ってくる
+	speak(result) # 結果を喋る
 	# 晴だったらダンスする
 	# if '晴' in result:
 	# 	return "lets dance"
 	# else:
 	# 	return "not"
-
-def do():
-	ask_where()
-	ID = listen()
-	say_forecast(ID)
 
 def weather_forecast():
 	def parse(text):
@@ -67,7 +58,7 @@ def weather_forecast():
     def callback(msg):
         words = parse(msg.data)
         if words == ['天気', '予報', 'モード', '開始']:
-        	do()
+        	do() # 天気予報モード開始の端点
         else:
         	return
     rospy.Subscriber("/speech", String, callback) 
