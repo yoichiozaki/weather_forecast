@@ -37,11 +37,33 @@ def do():
 	cityID = voice2text.get_cityID() # 喋っている音声をテキストに変換してIDにして返す
 	result = forecast_from_livedoor_api(cityID) # APIを叩いて情報持ってくる
 	speak(result) # 結果を喋る
+
 	# 晴だったらダンスする
 	# if '晴' in result:
 	# 	return "lets dance"
 	# else:
 	# 	return "not"
+	# ダンスだけども
+	# {
+    # 	“command” : “move”,
+    # 	“parameters” : {
+    #     	“direction” : “clockwise”,
+    #     	“steps” : 50
+    # 	}
+	# }
+	# みたいなmoveコマンドを左右にdirectionを振りながら投げれば動くのではないか
+	# これがダメだったら前後に動く感じでダンスとしてもいいのではないか
+	# その場合は
+	# {
+	#    "command" : "run",
+	#    "parameters" : {
+	#        "direction" : "clockwise",
+	#        "speed" : 800.0
+	#    }
+	# }
+	# とstopを交互に送る必要がある
+	# 何れにしても動作を見てみないとどう言ったメッセージを送ればいいのかはわからない
+	# dance
 
 def weather_forecast():
 	def parse(text):
@@ -66,7 +88,7 @@ def weather_forecast():
 
 def main():
 	rospy.init_node('weather_forecast')
-	# dance = rospy.Publisher('/dance', String, queue_size=1)
+	# dance = rospy.Publisher('/dance', String, queue_size=1) # /danceトピックにメッセージを送る
 	weather_forecast()
 
 if __name__ == '__main__':
