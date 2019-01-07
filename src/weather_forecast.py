@@ -18,6 +18,7 @@ if __name__ == '__main__':
 	main()
 
 ##############################
+
 def speak(text):
    rospy.wait_for_service(“speak_text”)
    try:
@@ -28,7 +29,6 @@ def speak(text):
        print “Service call failed: %s” % e
 
 def parse(text):
-    """/speechを単語単位に分割"""
     m = MeCab.Tagger("-Ochasen")
     node = m.parseToNode(text)
     words_list = []
@@ -92,9 +92,7 @@ def do_weather_forecast(msg):
     url = 'http://weather.livedoor.com/forecast/webservice/json/v1'
     response = requests.get(url, params={"city": location_id})
     weather_data = response.json()
-    # print(weather_data)
     result = ""
-    # 今日明日明後日の天気予報と詳細を喋らせる。
     for forecast in weather_data['forecasts']:
         print(forecast['telop'])
         if forecast['dateLabel'] == "今日":
@@ -109,11 +107,27 @@ def do_weather_forecast(msg):
 # 以下を~/robot_lab_ws/src/robot_lab/src/robot_lab/main.pyに追記する
 # def dance_controller():
 #     def callback(msg):
-#         if msg.data == "止まれ":
-#             stop(Stop.Soft)
+#         if msg.data == "sunny": # 前後に揺れる
+#            drive(Motor.Right, 0.5)
+#            drive(Motor.Left, 0.5)
+#            sleep(1)
+#            drive(Motor.Right, -0.5)
+#            drive(Motor.Left, -0.5)
+#            sleep(1)
+#            drive(Motor.Right, 0.5)
+#            drive(Motor.Left, 0.5)
+#            sleep(1)
+#            drive(Motor.Right, -0.5)
+#            drive(Motor.Left, -0.5)
 #             return
-#         elif msg.data == "前":
-#             drive(0.5, 0.5)
-#             return
+#         elif msg.data == "rainy": # 左右に揺れる
+#            turn(True)
+#            sleep(1)
+#            turn(False)
+#            sleep(1)
+#            turn(True)
+#            sleep(1)
+#            turn(False)
+#            return
 #     rospy.Subscriber("/dance", String, callback)
 #     rospy.spin()
