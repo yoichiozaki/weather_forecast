@@ -7,12 +7,15 @@ import json
 
 from speak_tools.srv import *
 
+pub = rospy.Publisher('dance', String, queue_size=10)
+
 def main():
     rospy.init_node('weather_forecast')
-    rospy.Subscriber("/speech", String, callback)
-    return
+    rospy.Subscriber("/speech", String, do_weather_forecast) # speechに何かが投げられるたびにcallbackが実行される
+    rospy.spin()
 
-main();
+if __name__ == '__main__':
+	main()
 
 ##############################
 def speak(text):
@@ -94,6 +97,23 @@ def do_weather_forecast(msg):
     # 今日明日明後日の天気予報と詳細を喋らせる。
     for forecast in weather_data['forecasts']:
         print(forecast['telop'])
+        if forecast['dateLabel'] == "今日":
+        	if "晴" in forecast['telop']:
+        		pub.publish("sunny")
+        	elif "雨" in forecast['telop']:
+        		pub.publish("rainy")
         result = result + forecast['dateLabel'] + "の天気は"+ forecast['telop'] + "。"
     result = result + forecast['description']['text'] 
     speak(result)
+
+# 以下を~/robot_lab_ws/src/robot_lab/src/robot_lab/main.pyに追記する
+# def dance_controller():
+#     def callback(msg):
+#         if msg.data == "止まれ":
+#             stop(Stop.Soft)
+#             return
+#         elif msg.data == "前":
+#             drive(0.5, 0.5)
+#             return
+#     rospy.Subscriber("/dance", String, callback)
+#     rospy.spin()
