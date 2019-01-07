@@ -8,7 +8,7 @@ import json
 from speak_tools.srv import *
 
 def main():
-    rospy.init_node(‘weather_forecast’)
+    rospy.init_node('weather_forecast')
     rospy.Subscriber("/speech", String, callback)
     return
 
@@ -84,7 +84,6 @@ def do_weather_forecast(msg):
 	speak("どこの天気予報が知りたいですか。地名で教えてください。")
 	words = parse(msg.data)
 	speak("わかりました。お調べしますね。")
-	# speak("ピコピコピコピコ")
 	location_id = get_locationID(words)
 	print("locationID :" + location_id)
     url = 'http://weather.livedoor.com/forecast/webservice/json/v1'
@@ -92,7 +91,9 @@ def do_weather_forecast(msg):
     weather_data = response.json()
     # print(weather_data)
     result = ""
+    # 今日明日明後日の天気予報と詳細を喋らせる。
     for forecast in weather_data['forecasts']:
         print(forecast['telop'])
-        result = result + forecast[‘telop’] "。"
+        result = result + forecast['dateLabel'] + "の天気は"+ forecast['telop'] + "。"
+    result = result + forecast['description']['text'] 
     speak(result)
